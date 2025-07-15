@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recruiter Meal Counter - SEC TAMU</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>Student Engineers Council - Recruiter Meal Counter</h1>
+
+    <nav>
+        <a href="/">Home</a> |
+        <a href="/charts">Charts</a>
+    </nav>
+
+    <div id="controls">
+        <input type="text" id="companyName" placeholder="Company Name">
+        <input type="number" id="recruiterCount" placeholder="Initial Recruiters">
+        <button onclick="addCompany()">Add Company</button>
+
+        <input type="file" id="csvFile">
+        <button onclick="uploadCSV()">Upload CSV</button>
+    </div>
+
+    <input type="text" id="search" oninput="searchCompanies()" placeholder="Search companies...">
+
+    <div id="companyList" class="scroll-box"></div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

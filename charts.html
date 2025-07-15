@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Recruiter Charts - SEC TAMU</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Recruiter Analytics</h1>
+
+    <nav>
+        <a href="/">Home</a> |
+        <a href="/charts">Charts</a>
+    </nav>
+
+    <select id="chartType" onchange="renderChart()">
+        <option value="bar">Bar Chart</option>
+        <option value="pie">Pie Chart</option>
+    </select>
+
+    <canvas id="chartCanvas" width="400" height="400"></canvas>
+
+    <script>
+        let chart;
+        function renderChart() {
+            const type = document.getElementById('chartType').value;
+            fetch('/graph_data')
+                .then(res => res.json())
+                .then(data => {
+                    const ctx = document.getElementById('chartCanvas').getContext('2d');
+                    if (chart) chart.destroy();
+                    chart = new Chart(ctx, {
+                        type: type,
+                        data: {
+                            labels: Object.keys(data),
+                            datasets: [{
+                                label: 'Recruiters',
+                                data: Object.values(data),
+                                backgroundColor: type === 'pie'
+                                    ? Object.keys(data).map(() => `hsl(${Math.random() * 360}, 70%, 60%)`)
+                                    : undefined
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            plugins: {
+                                legend: { display: type === 'pie' }
+                            },
+                            scales: type === 'bar' ? {
+                                y: { beginAtZero: true }
+                            } : {}
+                        }
+                    });
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', renderChart);
+    </script>
+</body>
+</html>
