@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify , redirect, url_for
 import csv
 import os
 
@@ -62,18 +62,27 @@ def search():
 
 @app.route('/upload_csv', methods=['POST'])
 def upload_csv():
+    if 'file' not in request.files:
+        return "No file part", 400
     file = request.files['file']
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-    file.save(filepath)
+    if file.filename == '':
+        return "No selected file", 400
 
-    with open(filepath, 'r') as f:
-        reader = csv.DictReader(f)
-        for row in reader:
-            name = row['Company'].strip()
-            count = int(row['Recruiters'].strip())
-            companies[name] = count
-            undo_stack[name] = []
-    return jsonify(success=True)
+    if file:
+        filepath = os.path.join('uploads', file.filename)
+        file.save(filepath)
+
+        with open(filepath, newline='') as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                name = row['Company'].strip()
+                count = int(row['Recruiters'].strip())
+                companies[name] = count           # <- this adds to frontend
+                undo_stack[name] = []             # <- same as add_company()
+
+        return redirect(url_for('index'))
+
+
 
 @app.route('/graph_data', methods=['GET'])
 def graph_data():
